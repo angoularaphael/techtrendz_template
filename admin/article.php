@@ -134,7 +134,7 @@ if (isset($_POST['saveArticle'])) {
             <label for="category" class="form-label">Catégorie</label>
             <select name="category_id" id="category" class="form-select">
                 <?php foreach ($categories as $category) { ?>
-                    <option value="1" <?php if (isset($article['category_id']) && $article['category_id'] == $category['id']) { ?>selected="selected" <?php }; ?>><?= $category['name'] ?></option>
+                    <option value="<?= $category['id'] ?>" <?php if (isset($article['category_id']) && $article['category_id'] == $category['id']) { ?>selected="selected" <?php }; ?>><?= $category['name'] ?></option>
                 <?php } ?>
             </select>
         </div>

@@ -8,6 +8,7 @@ require_once __DIR__ . "/templates/header.php";
 
 // @todo Il faut appeler la fonction getArticles, cette fonction est a créer
 // $articles = getArticles($pdo, _HOMEPAGE_ITEM_LIMIT_);
+$articles = getArticles($pdo, 3);
 
 ?>
 
@@ -28,34 +29,21 @@ require_once __DIR__ . "/templates/header.php";
 </div>
 
 <div class="row text-center">
-            
-<div class="col-md-4 my-2 d-flex">
-    <div class="card">
-        <img src="/uploads/articles/3-devops.png" class="card-img-top" alt="Les meilleurs outils DevOps">
-        <div class="card-body">
-            <h5 class="card-title">Les meilleurs outils DevOps</h5>
-            <a href="actualite.php?id=52" class="btn btn-primary">Lire la suite</a>
+    <?php foreach ($articles as $article) { ?>
+        <div class="col-md-4 my-2 d-flex">
+            <div class="card">
+                <?php if (isset($article['image']) && $article['image'] != '') { ?>
+                    <img src="<?= _ARTICLES_IMAGES_FOLDER_ . $article['image'] ?>" class="card-img-top" alt="<?= htmlspecialchars($article['title']) ?>">
+                <?php } else { ?>
+                    <img src="<?= _ASSETS_IMAGES_FOLDER_ . 'default-article.jpg' ?>" class="card-img-top" alt="<?= htmlspecialchars($article['title']) ?>">
+                <?php } ?>
+                <div class="card-body">
+                    <h5 class="card-title"><?= htmlspecialchars($article['title']) ?></h5>
+                    <a href="actualite.php?id=<?= $article['id'] ?>" class="btn btn-primary">Lire la suite</a>
+                </div>
+            </div>
         </div>
-    </div>
-</div>            
-<div class="col-md-4 my-2 d-flex">
-    <div class="card">
-        <img src="/uploads/articles/2-react-vs-react-native.jpg" class="card-img-top" alt="React Natives : Quelles différences par rapport à React">
-        <div class="card-body">
-            <h5 class="card-title">React Natives : Quelles différences par rapport à React</h5>
-            <a href="actualite.php?id=51" class="btn btn-primary">Lire la suite</a>
-        </div>
-    </div>
-</div>            
-<div class="col-md-4 my-2 d-flex">
-    <div class="card">
-        <img src="/uploads/articles/1-php-vs-python.jpg" class="card-img-top" alt="PHP ou Python ?">
-        <div class="card-body">
-            <h5 class="card-title">PHP ou Python ?</h5>
-            <a href="actualite.php?id=50" class="btn btn-primary">Lire la suite</a>
-        </div>
-    </div>
-</div>    
+    <?php } ?>
 </div>
 
 <?php require_once __DIR__ . "/templates/footer.php"; ?>

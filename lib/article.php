@@ -10,64 +10,69 @@ function getArticleById(PDO $pdo, int $id):array|bool
 
 function getArticles(PDO $pdo, ?int $limit = null, ?int $page = null):array|bool
 {
-
-    /*
-        @todo faire la requête de récupération des articles
-        La requête sera différente selon les paramètres passés, commencer déjà juste avec la base en ignrorant les autre params
-    */
-
-    //$query->execute();
-    //$result = $query->fetchAll(PDO::FETCH_ASSOC);
-    //return $result;
+    $sql = "SELECT * FROM articles ORDER BY id DESC";
+    
+    // If limit is provided, add LIMIT clause
+    if ($limit !== null) {
+        if ($page !== null) {
+            // With pagination: calculate offset
+            $offset = ($page - 1) * $limit;
+            $sql .= " LIMIT :limit OFFSET :offset";
+            $query = $pdo->prepare($sql);
+            $query->bindValue(":limit", $limit, PDO::PARAM_INT);
+            $query->bindValue(":offset", $offset, PDO::PARAM_INT);
+        } else {
+            // Just limit, no pagination
+            $sql .= " LIMIT :limit";
+            $query = $pdo->prepare($sql);
+            $query->bindValue(":limit", $limit, PDO::PARAM_INT);
+        }
+    } else {
+        // No limit
+        $query = $pdo->prepare($sql);
+    }
+    
+    $query->execute();
+    $result = $query->fetchAll(PDO::FETCH_ASSOC);
+    return $result;
 }
 
 function getTotalArticles(PDO $pdo):int|bool
 {
-    /*
-        @todo récupérer le nombre total d'article (avec COUNT)
-    */
-
-    //$result = $query->fetch(PDO::FETCH_ASSOC);
-    //return $result['total'];
+    $query = $pdo->prepare("SELECT COUNT(*) as total FROM articles");
+    $query->execute();
+    $result = $query->fetch(PDO::FETCH_ASSOC);
+    return $result['total'];
 }
 
 function saveArticle(PDO $pdo, string $title, string $content, ?string $image, int $category_id, ?int $id = null):bool 
 {
     if ($id === null) {
-        /*
-            @todo si id est null, alors on fait une requête d'insection
-        */
-        //$query = ...
+        // Insert new article
+        $query = $pdo->prepare("INSERT INTO articles (title, content, image, category_id) VALUES (:title, :content, :image, :category_id)");
     } else {
-        /*
-            @todo sinon, on fait un update
-        */
-        
-        //$query = ...
-        
-        //$query->bindValue(':id', $id, $pdo::PARAM_INT);
+        // Update existing article
+        $query = $pdo->prepare("UPDATE articles SET title = :title, content = :content, image = :image, category_id = :category_id WHERE id = :id");
+        $query->bindValue(':id', $id, PDO::PARAM_INT);
     }
 
-    // @todo on bind toutes les valeurs communes
-   
+    // Bind common values
+    $query->bindValue(':title', $title, PDO::PARAM_STR);
+    $query->bindValue(':content', $content, PDO::PARAM_STR);
+    $query->bindValue(':image', $image, PDO::PARAM_STR);
+    $query->bindValue(':category_id', $category_id, PDO::PARAM_INT);
 
-
-    //return $query->execute();  
+    return $query->execute();  
 }
 
 function deleteArticle(PDO $pdo, int $id):bool
 {
-    
-    /*
-        @todo Faire la requête de suppression
-    */
-
-    /*
+    $query = $pdo->prepare("DELETE FROM articles WHERE id = :id");
+    $query->bindValue(':id', $id, PDO::PARAM_INT);
     $query->execute();
     if ($query->rowCount() > 0) {
         return true;
     } else {
         return false;
     }
-    */
 }
